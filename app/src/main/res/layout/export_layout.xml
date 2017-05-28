@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.appsguays.miscontactos.ExportActivity"
+    >
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:text="Enviar"
+        android:id="@+id/tvTitulo"
+        android:textColor="#000000"
+        android:textSize="20sp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Para:"
+        android:id="@+id/tvPara"
+        android:textColor="#000000"
+        android:textSize="16sp"
+        android:layout_marginTop="10dp"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/tvTitulo"
+        android:layout_alignParentEnd="false"
+        android:textIsSelectable="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true" />
+
+    <EditText
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:id="@+id/destinationAddress"
+        android:layout_below="@+id/tvPara"
+        android:inputType="textEmailAddress"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:id="@+id/tvAsunto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/destinationAddress"
+        android:text="Asunto"
+        android:layout_alignParentStart="true" />
+
+    <EditText
+        android:id="@+id/subject"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/tvAsunto"
+        android:inputType="textEmailSubject"
+        android:layout_alignParentStart="true">
+    </EditText>
+
+    <CheckBox
+        android:id="@+id/chkTexto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/subject"
+        android:checked="true"
+        android:text="Texto plano"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true" />
+
+    <CheckBox
+        android:id="@+id/chkExcel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/chkTexto"
+        android:checked="true"
+        android:text="Excel"
+        android:layout_alignParentStart="false"
+        android:layout_alignParentLeft="true" />
+
+    <CheckBox
+        android:id="@+id/chkXml"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/chkExcel"
+        android:checked="true"
+        android:text="Fichero XML"
+        android:layout_alignParentStart="false"
+        android:layout_alignParentLeft="true" />
+    <Button
+        android:id="@+id/button"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/chkXml"
+        android:layout_marginTop="15dp"
+        android:text="Enviar"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text=""
+        android:id="@+id/txtLog"
+        android:layout_below="@+id/button"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="30dp"
+        android:layout_alignRight="@+id/button"
+        android:layout_alignEnd="@+id/button" />
+
+
+</RelativeLayout>

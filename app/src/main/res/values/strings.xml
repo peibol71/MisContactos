@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">MisContactos</string>
+    <string name="title_activity_export">ExportActivity</string>
+</resources>

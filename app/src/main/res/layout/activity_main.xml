@@ -13,6 +13,12 @@
         android:id="@+id/btnExport"
         android:layout_marginTop="15dp"
         android:onClick="Exportar" />
-
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Consultar / Eliminar"
+        android:layout_below="@+id/btnExport"
+        android:id="@+id/btnCheck"
+        android:onClick="Lista" />
 
 </RelativeLayout>

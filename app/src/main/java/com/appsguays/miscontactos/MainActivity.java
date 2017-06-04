@@ -16,4 +16,9 @@ public class MainActivity extends AppCompatActivity {
         Intent i = new Intent(this, com.appsguays.miscontactos.ExportActivity.class);
         startActivity(i);
     }
+    public void Lista(View view) {
+        Intent i;
+        i = new Intent(this, com.appsguays.miscontactos.ListActivity.class);
+        startActivity(i);
+    }
 }

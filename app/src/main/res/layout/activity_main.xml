@@ -20,5 +20,12 @@
         android:layout_below="@+id/btnExport"
         android:id="@+id/btnCheck"
         android:onClick="Lista" />
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Importar"
+        android:layout_below="@+id/btnCheck"
+        android:id="@+id/btnImport"
+        android:onClick="Importar" />
 
 </RelativeLayout>

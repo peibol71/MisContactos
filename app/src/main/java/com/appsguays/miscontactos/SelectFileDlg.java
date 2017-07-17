@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -66,7 +67,8 @@ public class SelectFileDlg extends ListActivity {
         File f = new File(currentPath);
         File[] files = f.listFiles();
         if (files == null) {
-            currentPath = ROOT;
+            String s = Environment.getExternalStorageDirectory().toString();
+            currentPath = s; //ROOT;
             f = new File(currentPath);
             files = f.listFiles();
         }
@@ -82,7 +84,6 @@ public class SelectFileDlg extends ListActivity {
             addItem("../", R.drawable.folder);
             path.add(f.getParent());
             parentPath = f.getParent();
-
         }
 
         TreeMap<String, String> dirsMap = new TreeMap<>();
@@ -97,7 +98,6 @@ public class SelectFileDlg extends ListActivity {
             } else {
                 final String fileName = file.getName();
                 final String fileNameLwr = fileName.toLowerCase();
-                // se ha um filtro de formatos, utiliza-o
                 if (formatFilter != null) {
                     boolean contains = false;
                     for (int i = 0; i < formatFilter.length; i++) {
@@ -111,7 +111,6 @@ public class SelectFileDlg extends ListActivity {
                         filesMap.put(fileName, fileName);
                         filesPathMap.put(fileName, file.getPath());
                     }
-                    // senao, adiciona todos os arquivos
                 } else {
                     filesMap.put(fileName, fileName);
                     filesPathMap.put(fileName, file.getPath());

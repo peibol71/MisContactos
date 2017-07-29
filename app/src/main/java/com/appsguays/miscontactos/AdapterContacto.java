@@ -6,6 +6,8 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -61,6 +63,16 @@ public class AdapterContacto extends BaseAdapter {
 
         TextView description = (TextView) v.findViewById(R.id.phone);
         description.setText(cont.getPhone());
+
+        CheckBox check = (CheckBox) v.findViewById(R.id.contactcheck);
+        check.setTag(position);
+        check.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton vw, boolean isChecked) {
+                Contacto cont = items.get((Integer) vw.getTag());
+                cont.setSelected(vw.isChecked());
+            }
+        });
 
         return v;
     }

@@ -5,6 +5,7 @@ public class Contacto {
     private String name;
     private String phone;
     private String id;
+    private boolean selected;
 
     // constructor
     public Contacto(String contactId, String contactPhone, String contactName) {
@@ -24,4 +25,7 @@ public class Contacto {
     public String getPhone() {
         return phone;
     }
+
+    public boolean isSelected() { return selected; }
+    public void setSelected(boolean selected) { this.selected = selected; }
 }

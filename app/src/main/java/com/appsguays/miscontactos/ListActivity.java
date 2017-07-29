@@ -1,45 +1,46 @@
 package com.appsguays.miscontactos;
 
-import android.content.ContentProviderOperation;
-import android.content.ContentProviderResult;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.DialogInterface;
-import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.RemoteException;
 import android.provider.ContactsContract;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.ListIterator;
 
 public class ListActivity extends AppCompatActivity {
 
+    Context context = null;
     private ListView lvCont;
     private AdapterContacto myAdapter;
+    Button btnDelete = null;
+    ArrayList<Contacto> myList = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        context = this;
         setContentView(R.layout.list_layout);
 
         lvCont = (ListView) findViewById(R.id.lvContactos);
         populateContactList();
 
-        lvCont.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String txt;
-                // get the clicked item ID
-                Contacto c = (Contacto) parent.getItemAtPosition(position);
-                txt = c.getId() + " - " + c.getPhone() + " - " + c.getName();
-                PreguntaSiEliminaContacto(txt, c.getId());
+        btnDelete = (Button) findViewById(R.id.btnDelete);
+        btnDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                getSelectedContacts();
             }
-        } );
+        });
     }
 
     private void populateContactList() {
@@ -50,7 +51,7 @@ public class ListActivity extends AppCompatActivity {
         String s;
         Cursor phoneCursor;
 
-        ArrayList<Contacto> myList = new ArrayList<>();
+        myList = new ArrayList<>();
         Contacto cnt;
 
         Uri CONTENT_URI = ContactsContract.Contacts.CONTENT_URI;
@@ -99,32 +100,46 @@ public class ListActivity extends AppCompatActivity {
         lvCont.setAdapter(myAdapter);
     }
 
-    private void PreguntaSiEliminaContacto(String txt, final String contactId)  {
-        AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(this);
-        dlgAlert.setMessage("¿Estás seguro que quieres eliminar a\n"
-                + txt
-                + "\nde tus contactos?");
-        dlgAlert.setTitle("Atención");
-        dlgAlert.setCancelable(true);
-        dlgAlert.setPositiveButton("Ok",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        // Elimina contacto
-                        ArrayList<ContentProviderOperation> ops = new ArrayList<>();
+    private void getSelectedContacts() {
+        if (myList == null)
+            return;
+        Contacto cnt;
+        int nSelected = 0;
+        ListIterator it = myList.listIterator();
+        while(it.hasNext()) {
+            cnt = (Contacto)it.next();
+            if (cnt.isSelected())
+                nSelected++;
+        }
+        if (nSelected==0) {
+            Toast.makeText(context, "Selecciona al menos un contacto",
+                    Toast.LENGTH_SHORT).show();
+        } else {
+            AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(this);
+            dlgAlert.setMessage("¿Estás seguro que quieres eliminar "
+                    + Integer.toString(nSelected)
+                    + " contacto(s)?");
+            dlgAlert.setTitle("Atención");
+            dlgAlert.setCancelable(true);
+            dlgAlert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    // Elimina contactos
+                    Contacto cnt;
+                    ListIterator it = myList.listIterator();
+                    while (it.hasNext()) {
+                        cnt = (Contacto) it.next();
+                        if (cnt.isSelected()) {
 
-                        ops.add(ContentProviderOperation.newDelete(ContactsContract.Data.CONTENT_URI)
-                                .withSelection(ContactsContract.Data._ID + "=?", new String[]{String.valueOf(contactId)})
-                                .build());
-                        try {
-                            ContentProviderResult[] res =
-                                    getContentResolver().applyBatch(ContactsContract.AUTHORITY, ops);
-                        } catch (RemoteException | OperationApplicationException e) {
-                            e.printStackTrace();
-                            //txLog.setText("kk2 - " + e.getMessage());
+                            Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI,cnt.getId());
+                            int deleted = context.getContentResolver().delete(uri,null,null);
+                            if (deleted>0)
+                                System.out.println("OK");
                         }
                     }
-                });
-        dlgAlert.create().show();
+                    populateContactList();
+                }
+            });
+            dlgAlert.create().show();
+        }
     }
-
 }

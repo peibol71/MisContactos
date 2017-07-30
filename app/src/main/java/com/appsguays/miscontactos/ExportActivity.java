@@ -9,7 +9,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.content.Intent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -22,12 +22,17 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class ExportActivity  extends AppCompatActivity {
     private static final String NOM_FICH_EXCEL = "FicheroConMisContactos.xls";
     private static final String NOM_FICH_XML = "FicheroConMisContactos.xml";
     private static final String PACKAGE_NAME = "com.appsguays.miscontactos";
+
+    private static int SEND_MAIL = 1111;
 
     Button button;
     EditText destinationAddress;
@@ -38,13 +43,15 @@ public class ExportActivity  extends AppCompatActivity {
 
     TextView txLog;
 
+    boolean bEx;
+    boolean bXml;
+    File tmpExcelFile = null;
+    File tmpXmlFile = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.export_layout);
-//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
-
 
         sbj = (EditText) findViewById(R.id.subject);
         button = (Button) findViewById(R.id.button);
@@ -78,20 +85,18 @@ public class ExportActivity  extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 boolean bTx = chkTxt.isChecked();
-                boolean bEx = chkExc.isChecked();
-                boolean bXml = chkXml.isChecked();
+                bEx = chkExc.isChecked();
+                bXml = chkXml.isChecked();
 
                 if (!bTx && !bEx && !bXml)
                     return;
 
                 String subject = sbj.getText().toString();
                 String to = destinationAddress.getText().toString();
-                File tmpExcelFile = null;
-                File tmpXmlFile = null;
 
                 String outputDir = Environment.getExternalStorageDirectory()
                         + "/Android/data/" + PACKAGE_NAME + "/cache/";
-                txLog.setText(outputDir);
+                //txLog.setText(outputDir);
                 //String outputFile;
                 if (bEx || bXml) {
                     File dirFile = new File(outputDir);
@@ -101,14 +106,17 @@ public class ExportActivity  extends AppCompatActivity {
                             return;
                         }
                     }
+                    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                    Date dt = new Date();
+                    String sFecha = dateFormat.format(dt) + "_";
                     if (bEx)
-                        tmpExcelFile = new File(dirFile, NOM_FICH_EXCEL);
+                        tmpExcelFile = new File(dirFile, sFecha+NOM_FICH_EXCEL);
                     if (bXml)
-                        tmpXmlFile = new File(dirFile, NOM_FICH_XML);
+                        tmpXmlFile = new File(dirFile, sFecha+NOM_FICH_XML);
                 }
 
                 String message = fetchContacts(tmpExcelFile, tmpXmlFile);
-                txLog.setText("fetch ok");
+                //txLog.setText("fetch ok");
 
                 Intent emailIntent;
                 if (bEx && bXml)
@@ -127,7 +135,7 @@ public class ExportActivity  extends AppCompatActivity {
 
                 // ATTACHMENT ...
                 if (bEx && bXml) {
-                    ArrayList<Uri> uris = new ArrayList<Uri>();
+                    ArrayList<Uri> uris = new ArrayList<>();
                     Uri a = Uri.fromFile(tmpExcelFile);
                     uris.add(a);
                     a = Uri.fromFile(tmpXmlFile);
@@ -155,12 +163,23 @@ public class ExportActivity  extends AppCompatActivity {
                     emailIntent.setType("text/xml"); //emailActivity.setType("message/rfc822");
                 }
 
-                startActivity(Intent.createChooser(emailIntent, "Selecciona tu proveedor de correo:"));
-                //startActivity(Intent.createChooser(emailIntent, "Select your Email Provider :"));
+                //startActivity(Intent.createChooser(emailIntent, "Selecciona tu proveedor de correo:"));
+                Intent i = Intent.createChooser(emailIntent, "Selecciona tu proveedor de correo:");
+                startActivityForResult(i, SEND_MAIL);
             }
         });
     }
 
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == SEND_MAIL) {
+            if (bEx) {
+                tmpExcelFile.delete();
+            }
+            if (bXml) {
+                tmpXmlFile.delete();
+            }
+        }
+    }
     public String fetchContacts(File excelFile, File xmlFile) {
 
         int nCol;
@@ -200,8 +219,8 @@ public class ExportActivity  extends AppCompatActivity {
 
         int row = 1;
 
-        String phoneNumber = null;
-        String email = null;
+        String phoneNumber;
+        String email;
 
         Uri CONTENT_URI = ContactsContract.Contacts.CONTENT_URI;
         String _ID = ContactsContract.Contacts._ID;

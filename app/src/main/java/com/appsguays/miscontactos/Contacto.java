@@ -12,6 +12,7 @@ public class Contacto {
         this.id = contactId;
         this.phone = contactPhone;
         this.name = contactName;
+        this.selected = false;
     }
 
     public String getName() {

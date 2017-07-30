@@ -1,7 +1,9 @@
 package com.appsguays.miscontactos;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Environment;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -33,11 +35,14 @@ public class MainActivity extends AppCompatActivity {
         String myDir = Environment.getExternalStorageDirectory().toString(); // + "/Android/data/" + PACKAGE_NAME + "/";
         i.putExtra(SelectFileDlg.START_PATH, myDir);
         startActivityForResult(i, REQUEST_FILE);
-//        Intent intent = new Intent()
-//                    .setType("*/*")
-//                    .setAction(Intent.ACTION_OPEN_DOCUMENT);
-//                            //Intent.ACTION_GET_CONTENT);
-//        startActivityForResult(Intent.createChooser(intent, "Select a file"), REQUEST_FILE);
+    }
+
+    public void Ajustes(View view) {
+        Intent i = new Intent();
+        i.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+        Uri uri = Uri.fromParts("package", this.getPackageName(), null);
+        i.setData(uri);
+        startActivity(i);
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

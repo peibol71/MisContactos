@@ -27,5 +27,12 @@
         android:layout_below="@+id/btnCheck"
         android:id="@+id/btnImport"
         android:onClick="Importar" />
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Ajustes"
+        android:layout_below="@+id/btnImport"
+        android:id="@+id/btnSettings"
+        android:onClick="Ajustes" />
 
 </RelativeLayout>

@@ -17,6 +17,8 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
+import static android.provider.ContactsContract.Intents.Insert.DATA;
+
 public class ListActivity extends AppCompatActivity {
 
     Context context = null;
@@ -47,7 +49,7 @@ public class ListActivity extends AppCompatActivity {
         String contact_id;
         String name;
         int hasPhoneNumber;
-        String phoneNumber = null;
+        String phoneNumber = "";
         String s;
         Cursor phoneCursor;
 
@@ -86,8 +88,26 @@ public class ListActivity extends AppCompatActivity {
                                 }
                                 phoneCursor.close();
                             }
-                        } else
-                            phoneNumber = "Sin teléfono";
+                        }
+                        else {
+                            //int n = 1;
+                            Uri EmailCONTENT_URI = ContactsContract.CommonDataKinds.Email.CONTENT_URI;
+                            String EmailCONTACT_ID = ContactsContract.CommonDataKinds.Email.CONTACT_ID;
+                            String email;
+                            // Query and loop for every email of the contact
+                            Cursor emailCursor = contentResolver.query(EmailCONTENT_URI, null, EmailCONTACT_ID + " = ?", new String[]{contact_id}, null);
+                            if (emailCursor != null) {
+                                while (emailCursor.moveToNext()) { //&& n<6) {
+                                    email = emailCursor.getString(emailCursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
+                                    phoneNumber = "e-mail: " + email;
+                                    break; // n++;
+                                }
+                                emailCursor.close();
+                            }
+
+                            if (phoneNumber.isEmpty())
+                                phoneNumber = "Sin teléfono ni e-mail";
+                        }
                         cnt = new Contacto(contact_id, phoneNumber, name);
                         myList.add(cnt);
                     }

@@ -49,7 +49,7 @@ public class ListActivity extends AppCompatActivity {
         String contact_id;
         String name;
         int hasPhoneNumber;
-        String phoneNumber = "";
+        String phoneNumber;
         String s;
         Cursor phoneCursor;
 
@@ -73,6 +73,7 @@ public class ListActivity extends AppCompatActivity {
                 // Loop for every contact in the phone
                 if (cursor.getCount() > 0) {
                     while (cursor.moveToNext()) {
+                        phoneNumber = "";
                         contact_id = cursor.getString(cursor.getColumnIndex(_ID));
                         name = cursor.getString(cursor.getColumnIndex(DISPLAY_NAME));
                         hasPhoneNumber = Integer.parseInt(cursor.getString(cursor.getColumnIndex(HAS_PHONE_NUMBER)));

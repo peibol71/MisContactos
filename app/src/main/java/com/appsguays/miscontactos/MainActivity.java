@@ -49,8 +49,8 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == REQUEST_FILE && resultCode == SelectFileDlg.RESULT_OK) {
             String filePath = data.getStringExtra(SelectFileDlg.RESULT_PATH);
             //System.out.println(filePath);
-            Intent i = new Intent(this, com.appsguays.miscontactos.ImportList.class);
-            i.putExtra(ImportList.FILE_PATH, filePath);
+            Intent i = new Intent(this, ImportActivity.class);
+            i.putExtra(ImportActivity.FILE_PATH, filePath);
             startActivity(i);
         }
     }

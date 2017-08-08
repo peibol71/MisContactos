@@ -17,8 +17,6 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
-import static android.provider.ContactsContract.Intents.Insert.DATA;
-
 public class ListActivity extends AppCompatActivity {
 
     Context context = null;

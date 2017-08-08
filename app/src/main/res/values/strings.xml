@@ -2,4 +2,5 @@
     <string name="app_name">MisContactos</string>
     <string name="title_activity_export">ExportActivity</string>
     <string name="title_activity_list">ListActivity</string>
+    <string name="title_activity_import">ImportActivity</string>
 </resources>

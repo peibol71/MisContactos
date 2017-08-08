@@ -30,7 +30,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-public class ImportList extends AppCompatActivity {
+public class ImportActivity extends AppCompatActivity {
 
     public static final String FILE_PATH = "FILE_PATH";
 

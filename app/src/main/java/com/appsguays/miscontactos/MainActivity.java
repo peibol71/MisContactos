@@ -1,16 +1,30 @@
 package com.appsguays.miscontactos;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
 
     private static int REQUEST_FILE = 1234;
+    private static final int REQUEST_ID_MULTIPLE_PERMISSIONS = 1235;
+
+    private static final int ACT_ID_EXPORT = 1;
+    private static final int ACT_ID_LIST = 2;
+    private static final int ACT_ID_IMPORT = 3;
+    private int boton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,22 +33,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void Exportar(View view) {
-        Intent i = new Intent(this, com.appsguays.miscontactos.ExportActivity.class);
-        startActivity(i);
+        boton = ACT_ID_EXPORT;
+        if (!CheckPermissions())
+            return;
+        AExportar();
+        boton = 0;
     }
 
     public void Lista(View view) {
-        Intent i = new Intent(this, ListActivity.class);
-        startActivity(i);
+        boton = ACT_ID_LIST;
+        if (!CheckPermissions())
+            return;
+        AListar();
+        boton = 0;
     }
 
     public void Importar(View view) {
-        // Preguntamos fichero:
-        Intent i = new Intent(this, com.appsguays.miscontactos.SelectFileDlg.class);
-        i.putExtra(SelectFileDlg.FORMAT_FILTER, new String[]{"xml"}); //set file filter
-        String myDir = Environment.getExternalStorageDirectory().toString(); // + "/Android/data/" + PACKAGE_NAME + "/";
-        i.putExtra(SelectFileDlg.START_PATH, myDir);
-        startActivityForResult(i, REQUEST_FILE);
+        boton = ACT_ID_IMPORT;
+        if (!CheckPermissions())
+            return;
+        AImportar();
+        boton = 0;
     }
 
     public void Ajustes(View view) {
@@ -55,4 +74,62 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private boolean CheckPermissions() {
+        int storage = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        int contacts = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_CONTACTS);
+        List<String> listPermissionsNeeded = new ArrayList<>();
+
+        if (storage != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
+        if (contacts != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded.add(Manifest.permission.WRITE_CONTACTS);
+        }
+        if (!listPermissionsNeeded.isEmpty()) {
+            ActivityCompat.requestPermissions(this, listPermissionsNeeded.toArray
+                    (new String[listPermissionsNeeded.size()]), REQUEST_ID_MULTIPLE_PERMISSIONS);
+            return false; // permissionOk;
+        }
+        return true;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_ID_MULTIPLE_PERMISSIONS: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted
+                    if (boton == ACT_ID_EXPORT) {
+                        AExportar();
+                    } else if (boton == ACT_ID_LIST) {
+                        AListar();
+                    } else if (boton == ACT_ID_IMPORT) {
+                        AImportar();
+                    }
+                    boton = 0;
+                } // else  // permission denied
+            }
+        }
+    }
+
+    private void AExportar() {
+        Intent i = new Intent(this, com.appsguays.miscontactos.ExportActivity.class);
+        startActivity(i);
+    }
+
+    private void AListar() {
+        Intent i = new Intent(this, ListActivity.class);
+        startActivity(i);
+    }
+
+    private void AImportar() {
+        // Preguntamos fichero:
+        Intent i = new Intent(this, com.appsguays.miscontactos.SelectFileDlg.class);
+        i.putExtra(SelectFileDlg.FORMAT_FILTER, new String[]{"xml"}); //set file filter
+        String myDir = Environment.getExternalStorageDirectory().toString();
+        i.putExtra(SelectFileDlg.START_PATH, myDir);
+        startActivityForResult(i, REQUEST_FILE);
+    }
 }

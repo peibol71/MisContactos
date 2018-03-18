@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.w3c.dom.Document;
@@ -43,15 +44,19 @@ public class ImportActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = this;
-        setContentView(R.layout.imp_list_layout);
+        setContentView(R.layout.list_layout);
 
-        lvFileCont = (ListView) findViewById(R.id.lvFileContacts);
+        lvFileCont = (ListView) findViewById(R.id.lvContactos);
         lvFileCont.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+
+        TextView tx = (TextView) findViewById(R.id.txContactsList);
+        tx.setText("Contactos en fichero");
 
         String filePath = getIntent().getStringExtra(FILE_PATH);
         RellenaListaDesdeFicheroXml(filePath);
 
-        Button btnImport = (Button) findViewById(R.id.btnImport);
+        Button btnImport = (Button) findViewById(R.id.btnDelete);
+        btnImport.setText("Importar");
         btnImport.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
@@ -106,11 +111,8 @@ public class ImportActivity extends AppCompatActivity {
     private void ImportSelectedContacts() {
         if (myList == null)
             return;
-        Contacto cnt;
         int nSelected = 0;
-        ListIterator it = myList.listIterator();
-        while(it.hasNext()) {
-            cnt = (Contacto)it.next();
+        for (Contacto cnt: myList) {
             if (cnt.isSelected())
                 nSelected++;
         }
@@ -126,10 +128,7 @@ public class ImportActivity extends AppCompatActivity {
             dlgAlert.setCancelable(true);
             dlgAlert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
-                    Contacto cnt;
-                    ListIterator it = myList.listIterator();
-                    while (it.hasNext()) {
-                        cnt = (Contacto) it.next();
+                    for (Contacto cnt: myList) {
                         if (cnt.isSelected()) {
                             InsertContact(cnt.getName(),cnt.getPhone());
                         }

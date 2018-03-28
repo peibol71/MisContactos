@@ -8,7 +8,7 @@ public class Contacto {
     private boolean selected;
 
     // constructor
-    public Contacto(String contactId, String contactPhone, String contactName) {
+    Contacto(String contactId, String contactPhone, String contactName) {
         this.id = contactId;
         this.phone = contactPhone;
         this.name = contactName;

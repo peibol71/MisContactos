@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void Exportar(View view) {
         boton = ACT_ID_EXPORT;
-        if (!CheckPermissions())
+        if (NoHayPermisos())
             return;
         AExportar();
         boton = 0;
@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void Lista(View view) {
         boton = ACT_ID_LIST;
-        if (!CheckPermissions())
+        if (NoHayPermisos())
             return;
         AListar();
         boton = 0;
@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void Importar(View view) {
         boton = ACT_ID_IMPORT;
-        if (!CheckPermissions())
+        if (NoHayPermisos())
             return;
         AImportar();
         boton = 0;
@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private boolean CheckPermissions() {
+    private boolean NoHayPermisos() {
         int storage = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
         int contacts = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_CONTACTS);
         List<String> listPermissionsNeeded = new ArrayList<>();
@@ -88,9 +88,9 @@ public class MainActivity extends AppCompatActivity {
         if (!listPermissionsNeeded.isEmpty()) {
             ActivityCompat.requestPermissions(this, listPermissionsNeeded.toArray
                     (new String[listPermissionsNeeded.size()]), REQUEST_ID_MULTIPLE_PERMISSIONS);
-            return false; // permissionOk;
+            return true; // permissionOk;
         }
-        return true;
+        return false;
     }
 
     @Override

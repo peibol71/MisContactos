@@ -76,11 +76,15 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean NoHayPermisos() {
         int storage = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        int ReadContacts = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS);
         int contacts = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_CONTACTS);
         List<String> listPermissionsNeeded = new ArrayList<>();
 
         if (storage != PackageManager.PERMISSION_GRANTED) {
             listPermissionsNeeded.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
+        if (ReadContacts != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded.add(Manifest.permission.READ_CONTACTS);
         }
         if (contacts != PackageManager.PERMISSION_GRANTED) {
             listPermissionsNeeded.add(Manifest.permission.WRITE_CONTACTS);

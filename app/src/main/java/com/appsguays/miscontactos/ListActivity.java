@@ -31,10 +31,10 @@ public class ListActivity extends AppCompatActivity {
         context = this;
         setContentView(R.layout.list_layout);
 
-        lvCont = (ListView) findViewById(R.id.lvContactos);
+        lvCont = findViewById(R.id.lvContactos);
         populateContactList();
 
-        btnDelete = (Button) findViewById(R.id.btnDelete);
+        btnDelete = findViewById(R.id.btnDelete);
         btnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
@@ -48,6 +48,7 @@ public class ListActivity extends AppCompatActivity {
         String name;
         int hasPhoneNumber;
         String phoneNumber;
+        String email;
         String s;
         Cursor phoneCursor;
 
@@ -72,6 +73,7 @@ public class ListActivity extends AppCompatActivity {
                 if (cursor.getCount() > 0) {
                     while (cursor.moveToNext()) {
                         phoneNumber = "";
+                        email = "";
                         contact_id = cursor.getString(cursor.getColumnIndex(_ID));
                         name = cursor.getString(cursor.getColumnIndex(DISPLAY_NAME));
                         hasPhoneNumber = Integer.parseInt(cursor.getString(cursor.getColumnIndex(HAS_PHONE_NUMBER)));
@@ -87,12 +89,10 @@ public class ListActivity extends AppCompatActivity {
                                 }
                                 phoneCursor.close();
                             }
-                        }
-                        else {
+                        } else {
                             //int n = 1;
                             Uri EmailCONTENT_URI = ContactsContract.CommonDataKinds.Email.CONTENT_URI;
                             String EmailCONTACT_ID = ContactsContract.CommonDataKinds.Email.CONTACT_ID;
-                            String email;
                             // Query and loop for every email of the contact
                             Cursor emailCursor = contentResolver.query(EmailCONTENT_URI, null, EmailCONTACT_ID + " = ?", new String[]{contact_id}, null);
                             if (emailCursor != null) {
@@ -107,7 +107,7 @@ public class ListActivity extends AppCompatActivity {
                             if (phoneNumber.isEmpty())
                                 phoneNumber = "Sin teléfono ni e-mail";
                         }
-                        cnt = new Contacto(contact_id, phoneNumber, name);
+                        cnt = new Contacto(contact_id, phoneNumber, name, email);
                         myList.add(cnt);
                     }
                 }

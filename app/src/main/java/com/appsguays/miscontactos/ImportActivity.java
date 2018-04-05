@@ -31,6 +31,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import static android.provider.ContactsContract.CommonDataKinds.Email.TYPE_WORK;
+
 public class ImportActivity extends AppCompatActivity {
 
     public static final String FILE_PATH = "FILE_PATH";
@@ -46,16 +48,16 @@ public class ImportActivity extends AppCompatActivity {
         context = this;
         setContentView(R.layout.list_layout);
 
-        lvFileCont = (ListView) findViewById(R.id.lvContactos);
+        lvFileCont = findViewById(R.id.lvContactos);
         lvFileCont.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 
-        TextView tx = (TextView) findViewById(R.id.txContactsList);
+        TextView tx = findViewById(R.id.txContactsList);
         tx.setText("Contactos en fichero");
 
         String filePath = getIntent().getStringExtra(FILE_PATH);
         RellenaListaDesdeFicheroXml(filePath);
 
-        Button btnImport = (Button) findViewById(R.id.btnDelete);
+        Button btnImport = findViewById(R.id.btnDelete);
         btnImport.setText("Importar");
         btnImport.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,10 +70,13 @@ public class ImportActivity extends AppCompatActivity {
     private void RellenaListaDesdeFicheroXml(String filePath) {
         String nombre;
         String telefono;
+        String email1;
         int temp;
         myList = new ArrayList<>();
         Contacto cnt;
         ArrayAdapter<String> adapter;
+        NodeList nlTel;
+        NodeList nlMail;
 
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         try {
@@ -82,7 +87,6 @@ public class ImportActivity extends AppCompatActivity {
             //read this - http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
             doc.getDocumentElement().normalize();
             NodeList nList = doc.getElementsByTagName("Contacto");
-            NodeList nlTel;
             int len = nList.getLength();
             int i = 0;
             for (temp = 0; temp < len; temp++) {
@@ -94,7 +98,13 @@ public class ImportActivity extends AppCompatActivity {
                     if (nlTel != null) {
                         if (nlTel.getLength() > 0) {
                             telefono = nlTel.item(0).getTextContent();
-                            cnt = new Contacto(String.valueOf(i), telefono, nombre);
+                            nlMail = eElement.getElementsByTagName("email1");
+                            email1 = "";
+                            if (nlMail != null) {
+                                if (nlMail.getLength() > 0)
+                                    email1 = nlMail.item(0).getTextContent();
+                            }
+                            cnt = new Contacto(String.valueOf(i), telefono, nombre, email1);
                             myList.add(cnt);
                             i++;
                         }
@@ -130,7 +140,7 @@ public class ImportActivity extends AppCompatActivity {
                 public void onClick(DialogInterface dialog, int which) {
                     for (Contacto cnt: myList) {
                         if (cnt.isSelected()) {
-                            InsertContact(cnt.getName(),cnt.getPhone());
+                            InsertContact(cnt.getName(),cnt.getPhone(),cnt.getEmail1());
                         }
                     }
                     Toast.makeText(context, "Contactos importados",
@@ -141,7 +151,7 @@ public class ImportActivity extends AppCompatActivity {
         }
     }
 
-    private void InsertContact(String nom, String telef) {
+    private void InsertContact(String nom, String telef, String eMail) {
         ArrayList<ContentProviderOperation> ops = new ArrayList<>();
         int rawContactInsertIndex = ops.size();
 
@@ -166,15 +176,15 @@ public class ImportActivity extends AppCompatActivity {
                 .withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, nom)
                 .build());
         //Email details
-//        ops.add(ContentProviderOperation
-//                .newInsert(ContactsContract.Data.CONTENT_URI)
-//                .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID,
-//                        rawContactInsertIndex)
-//                .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE)
-//                .withValue(ContactsContract.CommonDataKinds.Email.DATA, "abc@aho.com")
-//                .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE)
-//                .withValue(ContactsContract.CommonDataKinds.Email.TYPE, "2").build());
-
+        if (eMail.length() > 0) {
+            ops.add(ContentProviderOperation
+                    .newInsert(ContactsContract.Data.CONTENT_URI)
+                    .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex)
+                    .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE)
+                    .withValue(ContactsContract.CommonDataKinds.Email.DATA, eMail)
+                    .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE)
+                    .withValue(ContactsContract.CommonDataKinds.Email.TYPE, ContactsContract.CommonDataKinds.Email.TYPE_WORK).build());
+        }
 
         try {
             ContentProviderResult[] res = getContentResolver().applyBatch(

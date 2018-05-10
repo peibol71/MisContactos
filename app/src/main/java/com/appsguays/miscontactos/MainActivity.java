@@ -13,7 +13,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,16 +69,20 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_FILE && resultCode == SelectFileDlg.RESULT_OK) {
             String filePath = data.getStringExtra(SelectFileDlg.RESULT_PATH);
-            //System.out.println(filePath);
             IniciaImportActivity(filePath);
         }
         else if (requestCode== REQUEST_FILE_NEW && resultCode == RESULT_OK) {
             Uri uri = data.getData(); //obtener el uri content
             try {
                 String filePath = PathUtil.getPath(this, uri);
-                IniciaImportActivity(filePath);
+                if (filePath == null) {
+                    if (uri != null)
+                        Utils.MensajeError(this, "Problemilla con esta uri: " + uri.toString());
+                }
+                else
+                    IniciaImportActivity(filePath);
             } catch (java.net.URISyntaxException ex) {
-                Toast.makeText(this, ex.getMessage(),Toast.LENGTH_LONG).show();
+                Utils.MensajeError(this, ex.getMessage());
             }
         }
     }

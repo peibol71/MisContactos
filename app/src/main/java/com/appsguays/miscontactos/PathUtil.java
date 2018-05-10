@@ -12,7 +12,7 @@ import android.provider.MediaStore;
 
 import java.net.URISyntaxException;
 
-// From https://stackoverflow.com/a/41520090/7373099
+// Basado en ...  https://stackoverflow.com/a/41520090/7373099
 
 public class PathUtil {
 
@@ -29,11 +29,11 @@ public class PathUtil {
                 final String docId = DocumentsContract.getDocumentId(uri);
                 final String[] split = docId.split(":");
                 return Environment.getExternalStorageDirectory() + "/" + split[1];
-            } /* else if (isDownloadsDocument(uri)) {
+            }  else if (isDownloadsDocument(uri)) {
                 final String id = DocumentsContract.getDocumentId(uri);
                 uri = ContentUris.withAppendedId(
                         Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
-            } else if (isMediaDocument(uri)) {
+            } /* else if (isMediaDocument(uri)) {
                 final String docId = DocumentsContract.getDocumentId(uri);
                 final String[] split = docId.split(":");
                 final String type = split[0];
@@ -58,6 +58,7 @@ public class PathUtil {
                     return cursor.getString(column_index);
                 }
             } catch (Exception e) {
+                Utils.MensajeError(context, "getPath - " + e.getMessage());
             }
         } else if ("file".equalsIgnoreCase(uri.getScheme())) {
             return uri.getPath();

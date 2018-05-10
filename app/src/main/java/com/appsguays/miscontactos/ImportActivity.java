@@ -25,7 +25,6 @@ import org.w3c.dom.NodeList;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.ListIterator;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -112,7 +111,7 @@ public class ImportActivity extends AppCompatActivity {
                 }
             }
         } catch (ParserConfigurationException | IOException | org.xml.sax.SAXException ex) {
-            System.out.println(ex.getMessage());
+            Utils.MensajeError(this, ex.getMessage());
         }
         myAdapter = new AdapterContacto(this, myList);
         lvFileCont.setAdapter(myAdapter);
@@ -190,8 +189,7 @@ public class ImportActivity extends AppCompatActivity {
             ContentProviderResult[] res = getContentResolver().applyBatch(
                     ContactsContract.AUTHORITY, ops);
         } catch (RemoteException | OperationApplicationException e) {
-            e.printStackTrace();
-            System.out.println("kk2 - " + e.getMessage());
+            Utils.MensajeError(this, "InsertContact - " + e.getMessage());
         }
     }
 }

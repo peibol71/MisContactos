@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -12,6 +13,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static int REQUEST_FILE = 1234;
     private static final int REQUEST_ID_MULTIPLE_PERMISSIONS = 1235;
+    private static int REQUEST_FILE_NEW = 1236;
 
     private static final int ACT_ID_EXPORT = 1;
     private static final int ACT_ID_LIST = 2;
@@ -68,10 +71,23 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == REQUEST_FILE && resultCode == SelectFileDlg.RESULT_OK) {
             String filePath = data.getStringExtra(SelectFileDlg.RESULT_PATH);
             //System.out.println(filePath);
-            Intent i = new Intent(this, ImportActivity.class);
-            i.putExtra(ImportActivity.FILE_PATH, filePath);
-            startActivity(i);
+            IniciaImportActivity(filePath);
         }
+        else if (requestCode== REQUEST_FILE_NEW && resultCode == RESULT_OK) {
+            Uri uri = data.getData(); //obtener el uri content
+            try {
+                String filePath = PathUtil.getPath(this, uri);
+                IniciaImportActivity(filePath);
+            } catch (java.net.URISyntaxException ex) {
+                Toast.makeText(this, ex.getMessage(),Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+    private void IniciaImportActivity(String filePath)
+    {
+        Intent i = new Intent(this, ImportActivity.class);
+        i.putExtra(ImportActivity.FILE_PATH, filePath);
+        startActivity(i);
     }
 
     private boolean NoHayPermisos() {
@@ -129,11 +145,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void AImportar() {
-        // Preguntamos fichero:
-        Intent i = new Intent(this, com.appsguays.miscontactos.SelectFileDlg.class);
-        i.putExtra(SelectFileDlg.FORMAT_FILTER, new String[]{"xml"}); //set file filter
-        String myDir = Environment.getExternalStorageDirectory().toString();
-        i.putExtra(SelectFileDlg.START_PATH, myDir);
-        startActivityForResult(i, REQUEST_FILE);
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+            // Preguntamos fichero:
+            Intent i = new Intent(this, com.appsguays.miscontactos.SelectFileDlg.class);
+            i.putExtra(SelectFileDlg.FORMAT_FILTER, new String[]{"xml"}); //set file filter
+            String myDir = Environment.getExternalStorageDirectory().toString();
+            i.putExtra(SelectFileDlg.START_PATH, myDir);
+            startActivityForResult(i, REQUEST_FILE);
+        }
+        else {
+            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+            intent.setType("*/*");
+            startActivityForResult(Intent.createChooser(intent, "Selecciona fichero"), REQUEST_FILE_NEW);
+        }
     }
 }
